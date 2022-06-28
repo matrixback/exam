@@ -1,0 +1,152 @@
+<html>
+    <header>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script type="text/javascript" src="/static/js/google.charts.js"></script>
+    </header>
+    <body>
+    <a href="/">[Home]</a>
+    <h1>Voting Information</h1>
+    <hr/>
+    <div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul>
+                {% for category, message in messages %}
+                <li> <strong>{{category}}:</strong> {{ message }}</li>
+                {% endfor %}
+            </ul>
+            <hr/>
+        {% endif %}
+    {% endwith %}
+    </div>
+    <div>
+        {% if not is_db_exist %}
+        <h3>No data, please upload a csv file to your system.</h3>
+        {% else %}
+        <h3>Change system data by upload a new csv file.</h3>
+        {% endif %}
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="file">
+            <input type="submit" value="Upload">
+        </form>
+    </div>
+    <hr/>
+    <div>
+        <form action="/delete_data" method="post">
+            <button>Delete System Data</button>
+        </form>
+    </div>
+    <div>
+        State TotalPop
+        <div id="state_pop" style="width: 50%"></div>
+    </div>
+    <hr/>
+    <div>
+        State Voted
+        <div id="state_voted" style="width: 95%"></div>
+    </div>
+    <hr/>
+    <div>
+        TotalPop vs Voted
+        <div id="total_voted"></div>
+    </div>
+    <hr/>
+    </body>
+    <script>
+        google.charts.load("current", {packages:['corechart']});
+        
+        function ajaxPost(url, data, callback) {
+            // use ajax post data
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', url, true);
+            xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            xhr.send(data);
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    callback(xhr.responseText);
+                }
+            }
+        }
+
+        function ajaxGet(url, callback) {
+            // use ajax get data
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.send();
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    callback(JSON.parse(xhr.responseText)['data']);
+                }
+            }
+        }
+
+        // show state pop use pie chart.
+        function show_state_pop() {
+            url = '/state_pop'
+            ajaxGet(url, function (data) {
+                console.log(data);
+                // convert data to google DataTable
+                var data = google.visualization.arrayToDataTable(data);
+                var options = {
+                    title: 'State Totalpop',
+                };
+                var chart = new google.visualization.PieChart(document.getElementById('state_pop'));
+                chart.draw(data, options);
+            })
+        }
+
+        // show state voted pop use scatter vertical bar.
+        function show_state_voted() {
+            url = '/state_voted'
+            ajaxGet(url, function (data) {
+                console.log(data)
+                // convert data to google DataTable
+                var data = google.visualization.arrayToDataTable(data);
+                var view = new google.visualization.DataView(data);
+                // annotation column
+                view.setColumns([0, 1,
+                                {   
+                                    calc: "stringify",
+                                    sourceColumn: 1,
+                                    type: "string",
+                                    role: "annotation"
+                                },]);
+                var options = {
+                    title: "State Voted",
+                    legend: { position: "none" },
+                };
+                var chart = new google.visualization.ColumnChart(document.getElementById("state_voted"));
+                chart.draw(view, options);
+            })
+        }
+
+        // show state total and voted pop use scatter plot.
+        function show_total_voted() {
+            url = '/total_voted'
+            ajaxGet(url, function (data) {
+                console.log(data)
+                // convert data to google DataTable
+                var data = google.visualization.arrayToDataTable(data);
+                var options = {
+                    title: 'TotalPop vs Voted',
+                    hAxis: {title: 'TotalPop'},
+                    vAxis: {title: 'Voted'},
+                    legend: 'none',
+                };
+
+                var chart = new google.visualization.ScatterChart(document.getElementById('total_voted'));
+                chart.draw(data, options);
+                }
+            )
+        }
+        // show charts when loaded.
+        {% if is_db_exist %}
+        google.charts.setOnLoadCallback(show_state_pop);
+        google.charts.setOnLoadCallback(show_state_voted);
+        google.charts.setOnLoadCallback(show_total_voted);
+        {% endif %}
+    </script>
+</html>
