@@ -239,5 +239,22 @@ def total_voted():
     }
 
 
+@app.route('/get_column_1', methods=['POST'])
+def get_column_1():
+    data = request.json
+    print(data)
+    return {
+        'data': [
+            ['name', 'age'],
+            ['matrix', 30],
+            ['fenng', 40]
+        ],
+        'error': {
+            'code': 0,
+            'msg': ''
+        }
+    }
+
+
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=8080)
+    app.run(host='127.0.0.1', port=8080, debug=True)

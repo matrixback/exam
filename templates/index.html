@@ -52,6 +52,14 @@
         <div id="total_voted"></div>
     </div>
     <hr/>
+    <form name="column_1" id="column_1">
+        <label for="c1_L">L:</label>
+        <input type="text" name="c1_L" id="c1_L">
+        <label for="c1_H">H:</label>
+        <input type="text" name="c1_H" id="c1_H">
+        <input type="button" value="Submit" onclick="draw_1()">
+    </form>
+    <div id="column_1_chart"></div>
     </body>
     <script>
         google.charts.load("current", {packages:['corechart']});
@@ -60,12 +68,12 @@
             // use ajax post data
             var xhr = new XMLHttpRequest();
             xhr.open('POST', url, true);
-            xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            xhr.setRequestHeader('Content-type', 'application/json');
             xhr.send(data);
 
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4 && xhr.status == 200) {
-                    callback(xhr.responseText);
+                    callback(JSON.parse(xhr.responseText)['data']);
                 }
             }
         }
@@ -143,10 +151,33 @@
             )
         }
         // show charts when loaded.
-        {% if is_db_exist %}
-        google.charts.setOnLoadCallback(show_state_pop);
-        google.charts.setOnLoadCallback(show_state_voted);
-        google.charts.setOnLoadCallback(show_total_voted);
-        {% endif %}
+        // {% if is_db_exist %}
+        // google.charts.setOnLoadCallback(show_state_pop);
+        // google.charts.setOnLoadCallback(show_state_voted);
+        // google.charts.setOnLoadCallback(show_total_voted);
+        // {% endif %}
+
+        function draw_1() {
+            console.log("draw 1")
+            c1_L = parseFloat(document.getElementById("c1_L").value)
+            c1_H = parseFloat(document.getElementById("c1_H").value)
+            data = {
+                c1_L: c1_L,
+                c1_H: c1_H
+            }
+            ajaxPost('/get_column_1', JSON.stringify(data), function(data) {
+                console.log("hi, matrix")
+                console.log(data)
+                document.getElementById("c1_L").value = ""
+                document.getElementById("c1_H").value = ""
+
+                var data = google.visualization.arrayToDataTable(data);
+                var options = {
+                    title: 'State Totalpop',
+                };
+                var chart = new google.visualization.PieChart(document.getElementById('column_1_chart'));
+                chart.draw(data, options);
+            })
+        }
     </script>
 </html>
