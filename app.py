@@ -127,12 +127,12 @@ class DB:
 
     def get_top_n(self, top_number):
         print(top_number)
-        rv = [['fruit', 'count']]
+        rv = [['fruit', 'count', {"role": "style"}]]
         sql = "SELECT name, COUNT(*) FROM {} GROUP BY name ORDER BY COUNT(*) DESC".format(self.table)
         res = self.execute(sql,)
         res = res[:top_number]
         for r in res:
-            rv.append([r[0], r[1]])
+            rv.append([r[0], r[1], 'color:green'])
         print(rv)
         return rv
 
