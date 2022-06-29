@@ -229,7 +229,7 @@ def top_n():
 @app.route('/draw_scatter_diagram', methods=['POST'])
 def scatter_diagram():
     """
-    return top n, resp json: {"data": [], "error": {"code": 0, "msg": ""}}
+    return draw_scatter_diagram, resp json: {"data": [], "error": {"code": 0, "msg": ""}}
     """
     data = request.json
     print(data)
