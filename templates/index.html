@@ -150,6 +150,7 @@
                 var options = {
                     title: "Top N",
                     legend: { position: "none" },
+
                 };
                 var chart = new google.visualization.ColumnChart(document.getElementById("top_n"));
                 chart.draw(view, options);
@@ -171,21 +172,15 @@
                 document.getElementById("high").value = ""
 
                 var data = google.visualization.arrayToDataTable(data);
-                var view = new google.visualization.DataView(data);
-                // annotation column
-                view.setColumns([0, 1,
-                                {   
-                                    calc: "stringify",
-                                    sourceColumn: 1,
-                                    type: "string",
-                                    role: "annotation"
-                                },]);
                 var options = {
-                    title: "Sactter diagram",
-                    legend: { position: "none" },
+                    title: 'X vs.Y',
+                    hAxis: {title: 'X', minValue: low, maxValue: high},
+                    // vAxis: {title: 'Weight', minValue: 0, maxValue: 15},
+                    legend: 'none'
                 };
-                var chart = new google.visualization.ColumnChart(document.getElementById("scatter_digram"));
-                chart.draw(view, options);
+
+                var chart = new google.visualization.ScatterChart(document.getElementById('scatter_digram'));
+                chart.draw(data, options);
             })
         }
         
