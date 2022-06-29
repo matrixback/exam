@@ -1,0 +1,83 @@
+
+Name:
+Last 4 digits ID:
+
+CSE 6331, Cloud Computing					
+
+
+Quiz Q4, Summer 2022   (c) DL, UTA, 2022
+
+
+  C&P means cut and paste only those relevant lines from your program(s) into this quiz.
+
+
+ 1.  I understand that I am on my honor during this quiz, I will not collaborate, use 
+     non-allowed sources, and I will not discuss or share this quiz with anyone for the next 
+     12 hours.
+     You MAY: use Google to search, use previous source code, 
+     YOU MAY NOT use:
+     Email, Facebook, Hangouts, IM, chats, Skype or ANY other human connection.
+
+     This is a timed test. Late tests will have points deducted for being late.
+     Very late tests will not be graded.
+
+     When you are complete, with any part, raise your hand, so we may visually inspect that part.
+
+     The second part of the test, you should electronically submit, you will need to copy and paste 
+     only those lines of code to implement that part of the test, usually a few (two to eight) lines of code. 
+     Place it immediately after the question.
+
+     Submit this Quiz (renamed) with code cut and pasted, ONLY text. DO NOT submit zips, binaries, libraries,
+     or anything other than text.
+
+     When any parts(questions) are complete complete, submit this test, you may make multiple submissions.
+
+     If you have computer, or other, problems, please raise your hand immediately.
+
+     If you understand and agree, please initial here:
+     _________________
+
+ 2. Get files from this same folder.
+   
+ 3. Name your program/submission with your name and last digits of your ID.
+
+ 4a. Using the cloud services provider, all functionality possible should be implemented on that provider.
+     (Of course, displaying web pages through a browser and the user interface is "local")
+
+ 4b. Upload all data files (*csv, not this quiz) to cloud service. 
+  
+Show and submit code, when each part is complete, raise your hand and then show us:
+
+ To recieve credit you MUST show (demo) AND submit the code (text only) on Canvas.
+
+
+ 10. Show a web page and interface (which resides on the cloud provider) with your 
+     Student ID at the top and below that, your name, at the top of every web page dispayed 
+     (for this quiz). Please use a large font.
+
+     For this question (only this question), 
+     Using a web interface (web page) allow a user to give a number N, and the names of N fruits,
+     for example for N=2, "grape" and "figs", show a pie chart with N slices, 
+     where each pie slice represents the fraction of grapes and figs from that group, in this case there are 2 grapes and 4 figs,
+     so 66% should be figs and 33% grapes.
+
+     Each pie slice should be in a different color, please show the percent labels outside each slice.
+     The pie chart should occupy between 50 and 60% of the screen width. 
+
+ 11. On a web form, please allow a user, to give the same values as the previous question, and show a vertical bar chart 
+     with N bars colored green, where the height of each bar is the proportian of that fruit. Show only the largest N fruit
+     values, for example for N = 3, those are apple, banana, cherry.
+     Please put labels inside each bar. 
+
+ 12. On a web form, please allow a user, to give a range of values Low to High (L,H) for values in column 1
+     (for example 220 to 250) and show a point chart (scatter chart) with those values from column 1 for the X axis
+     and the corresponding values from column 3 on the Y axis.
+     Please scale this chart to be readable and make sense, and label the X and Y axis.
+     Please note: You will need to scale the X and Y axis, as well as label the X and Y axis.
+
+ 13. Show us, in a link, the application running and we will try it out. Only for parts 10, 11, 12
+
+ 14. When complete, return (send) this quiz
+     If you finish early, send this immediately, otherwise send between
+     the end of class and no more than 1 minute after that.
+
