@@ -7,9 +7,9 @@ from flask import Flask, request, render_template, flash, \
     redirect
 
 # server config
-DATA_DB = 'voting.db'
-TABLE = 'voting'
-DATA_FILE = 'voting.csv'
+DATA_DB = 'fruit.db'
+TABLE = 'fruit'
+DATA_FILE = 'fruit.csv'
 SECRET_KEY = 'jui*Ojl90G'
 UPLOAD_FOLDER = './'
 ALLOWED_EXTENSIONS = ['csv']
@@ -38,11 +38,10 @@ class DB:
         sql = """
         CREATE TABLE {} (
            _id INTEGER PRIMARY KEY AUTOINCREMENT,
-           state_name INT,
-           total_pop INT,
-           vote_pop INT,
-           registered INT,
-           voted INT
+           column_1 NUMERIC,
+           column_2 NUMERIC,
+           column_3 NUMERIC,
+           name CHARACTER(20)
         );
         """.format(self.table)
         self.execute(sql)
@@ -92,54 +91,62 @@ class DB:
         with open(DATA_FILE) as f:
             reader = csv.reader(f)
             # skip csv header line
-            next(reader)
+            # next(reader)
             for row in reader:
                 r = [
-                    row[0], 
+                    self.str_to_num(self.str_to_num(row[0])), 
                     self.str_to_num(self.str_to_num(row[1])), 
-                    self.str_to_num(self.str_to_num(row[2])), 
-                    self.str_to_num(self.str_to_num(row[3])),
-                    self.str_to_num(self.str_to_num(row[4]))
+                    self.str_to_num(self.str_to_num(row[2])),
+                    row[3]
                 ]
                 sql = """
                 INSERT INTO {} (
-                state_name,total_pop,vote_pop,registered,voted)
-                VALUES (?,?,?,?,?)
+                column_1,column_2,column_3,name)
+                VALUES (?,?,?,?)
                 """.format(self.table)
                 self.execute(sql, r)
 
     def str_to_num(self, s):
         """
-        convert 1,111 to 1111
+        convert str num to float
         """
         if isinstance(s, str):
-            return int(s.replace(',', ''))
+            return int(float(s))
         return s
 
-    def get_total_pop(self):
+    def get_fruit_count(self, fruit_names):
         """
         get state total pop
         """
-        sql = "SELECT state_name,total_pop FROM {}".format(self.table)
-        res = self.execute(sql)
-        # just return state_name and total_pop columns
-        return [[row[0], row[1]] for row in res]
+        rv = [['fruit', 'count']]
+        for name in fruit_names:
+            sql = "SELECT COUNT(*) FROM {} WHERE name=?".format(self.table)
+            res = self.execute(sql,(name,))
+            rv.append([name, res[0][0]])
+        return rv
 
-    def get_state_voted(self):
-        """
-        get state voted pop
-        """
-        sql = "SELECT state_name,voted FROM {}".format(self.table)
-        res = self.execute(sql)
-        return [[row[0], row[1]] for row in res]
+    def get_top_n(self, top_number):
+        print(top_number)
+        rv = [['fruit', 'count']]
+        sql = "SELECT name, COUNT(*) FROM {} GROUP BY name ORDER BY COUNT(*) DESC".format(self.table)
+        res = self.execute(sql,)
+        res = res[:top_number]
+        for r in res:
+            rv.append([r[0], r[1]])
+        print(rv)
+        return rv
 
-    def get_total_voted(self):
-        """
-        get state total and voted pop
-        """
-        sql = "SELECT total_pop,voted FROM {}".format(self.table)
-        res = self.execute(sql)
-        return [[row[0], row[1]] for row in res]
+    def get_scatter(self, low, high):
+        print(low, high)
+        rv = [['X', 'Y']]
+        sql = "SELECT column_1, column_3 FROM {} WHERE column_1>=? AND column_1<=?".format(self.table)
+        res = self.execute(sql, (low, high))
+        for r in res:
+            print(r[0], r[1])
+            rv.append([r[0], r[1]])
+        print(rv)
+        return rv
+
 
 
 @app.route('/')
@@ -185,17 +192,16 @@ def delete_data():
     return redirect('/')
 
 
-@app.route('/state_pop')
-def state_pop():
+@app.route('/fruit_fraction', methods=['POST'])
+def fruit_count():
     """
-    return state total pop, resp json: {"data": [], "error": {"code": 0, "msg": ""}}
+    return fruit fraction, resp json: {"data": [], "error": {"code": 0, "msg": ""}}
     """
-    total_pop = DB().get_total_pop()
-    # State, totalPop as first row used for google chart to display 
-    data = [['State', 'TotalPop']]
-    data.extend(total_pop)
+    data = request.json
+    fruit_names = data.get('fruit_names').split(',')
+    rv = DB().get_fruit_count(fruit_names)
     return {
-        'data': data,
+        'data': rv,
         'error': {
             'code': 0,
             'msg': ''
@@ -203,17 +209,16 @@ def state_pop():
     }
 
 
-@app.route('/state_voted')
-def state_voted():
+@app.route('/top_n', methods=['POST'])
+def top_n():
     """
-    return state voted pop, resp json: {"data": [], "error": {"code": 0, "msg": ""}}
+    return top n, resp json: {"data": [], "error": {"code": 0, "msg": ""}}
     """
-    voted = DB().get_state_voted()
-    # State, Voted as first row used for google chart to play
-    data = [['State', 'Voted']]
-    data.extend(voted)
+    data = request.json
+    top_number = data.get('top_number')
+    rv = DB().get_top_n(top_number)
     return {
-        'data': data,
+        'data': rv,
         'error': {
             'code': 0,
             'msg': ''
@@ -221,34 +226,18 @@ def state_voted():
     }
 
 
-@app.route('/total_voted')
-def total_voted():
+@app.route('/draw_scatter_diagram', methods=['POST'])
+def scatter_diagram():
     """
-    return state total voted pop, resp json: {"data": [], "error": {"code": 0, "msg": ""}}
+    return top n, resp json: {"data": [], "error": {"code": 0, "msg": ""}}
     """
-    total_voted = DB().get_total_voted()
-    # TotalPop, Voted as first row used for google chart to play
-    data = [['TotalPop','Voted']]
-    data.extend(total_voted)
-    return {
-        'data': data,
-        'error': {
-            'code': 0,
-            'msg': ''
-        }
-    }
-
-
-@app.route('/get_column_1', methods=['POST'])
-def get_column_1():
     data = request.json
     print(data)
+    low = data.get('low')
+    high = data.get('high')
+    rv = DB().get_scatter(low, high)
     return {
-        'data': [
-            ['name', 'age'],
-            ['matrix', 30],
-            ['fenng', 40]
-        ],
+        'data': rv,
         'error': {
             'code': 0,
             'msg': ''
