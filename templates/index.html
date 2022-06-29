@@ -40,28 +40,39 @@
         </form>
     </div>
     <div>
-        State TotalPop
-        <div id="state_pop" style="width: 50%"></div>
+        <p>Friut Fraction</p>
+        <form name="fruit_fraction">
+            <label for="fruit_number">fruit number:</label>
+            <input type="text" name="number" id="fruit_number", placeholder="2">
+            <label for="fruit_names">fruit names:</label>
+            <input type="text" name="fruit_names" id="fruit_names", placeholder="apple,pear">
+            <input type="button" value="Submit" onclick="draw_fruit_fraction()">
+        </form>
+        <div id="fruit_fraction" style="width: 95%"></div>
     </div>
     <hr/>
     <div>
-        State Voted
-        <div id="state_voted" style="width: 95%"></div>
+        <p>Top N</p>
+        <form name="top_n">
+            <label for="top_number">fruit number:</label>
+            <input type="text" name="top_number" id="top_number", placeholder="2">
+            <input type="button" value="Submit" onclick="draw_top_n()">
+        </form>
+        <div id="top_n" style="width: 95%"></div>
     </div>
     <hr/>
     <div>
-        TotalPop vs Voted
-        <div id="total_voted"></div>
+        <p>Scatter diagram</p>
+        <form name="scatter_digram">
+            <label for="low">Low:</label>
+            <input type="text" name="low" id="low", placeholder="248">
+            <label for="high">Low:</label>
+            <input type="text" name="high" id="high", placeholder="250">
+            <input type="button" value="Submit" onclick="draw_scatter_diagram()">
+        </form>
+        <div id="scatter_digram"></div>
     </div>
     <hr/>
-    <form name="column_1" id="column_1">
-        <label for="c1_L">L:</label>
-        <input type="text" name="c1_L" id="c1_L">
-        <label for="c1_H">H:</label>
-        <input type="text" name="c1_H" id="c1_H">
-        <input type="button" value="Submit" onclick="draw_1()">
-    </form>
-    <div id="column_1_chart"></div>
     </body>
     <script>
         google.charts.load("current", {packages:['corechart']});
@@ -152,34 +163,91 @@
                 }
             )
         }
-        // show charts when loaded.
-        // {% if is_db_exist %}
-        // google.charts.setOnLoadCallback(show_state_pop);
-        // google.charts.setOnLoadCallback(show_state_voted);
-        // google.charts.setOnLoadCallback(show_total_voted);
-        // {% endif %}
 
-        function draw_1() {
-            console.log("draw 1")
-            c1_L = parseFloat(document.getElementById("c1_L").value)
-            c1_H = parseFloat(document.getElementById("c1_H").value)
+        function draw_fruit_fraction() {
+            console.log("draw_fruit_fraction")
+            fruit_number = parseInt(document.getElementById("fruit_number").value)
+            fruit_names = document.getElementById("fruit_names").value
             data = {
-                c1_L: c1_L,
-                c1_H: c1_H
+                fruit_number: fruit_number,
+                fruit_names: fruit_names
             }
-            ajaxPost('/get_column_1', JSON.stringify(data), function(data) {
+            ajaxPost('/fruit_fraction', JSON.stringify(data), function(data) {
                 console.log("hi, matrix")
                 console.log(data)
-                document.getElementById("c1_L").value = ""
-                document.getElementById("c1_H").value = ""
+                document.getElementById("fruit_number").value = ""
+                document.getElementById("fruit_names").value = ""
 
                 var data = google.visualization.arrayToDataTable(data);
                 var options = {
-                    title: 'State Totalpop',
+                    title: 'Fruit Fraction',
                 };
-                var chart = new google.visualization.PieChart(document.getElementById('column_1_chart'));
+                var chart = new google.visualization.PieChart(document.getElementById('fruit_fraction'));
                 chart.draw(data, options);
             })
         }
+
+        function draw_top_n() {
+            console.log("draw_top_n")
+            top_number = parseInt(document.getElementById("top_number").value)
+            data = {
+                top_number: top_number
+            }
+            ajaxPost('/top_n', JSON.stringify(data), function(data) {
+                console.log(data)
+                document.getElementById("top_number").value = ""
+
+                var data = google.visualization.arrayToDataTable(data);
+                var view = new google.visualization.DataView(data);
+                // annotation column
+                view.setColumns([0, 1,
+                                {   
+                                    calc: "stringify",
+                                    sourceColumn: 1,
+                                    type: "string",
+                                    role: "annotation"
+                                },]);
+                var options = {
+                    title: "Top N",
+                    legend: { position: "none" },
+                };
+                var chart = new google.visualization.ColumnChart(document.getElementById("top_n"));
+                chart.draw(view, options);
+            })
+        }
+
+        function draw_scatter_diagram() {
+            console.log("draw_scatter")
+            low = parseFloat(document.getElementById("low").value)
+            high = parseFloat(document.getElementById("high").value)
+            data = {
+                low: low,
+                high: high
+            }
+            console.log(data)
+            ajaxPost('/draw_scatter_diagram', JSON.stringify(data), function(data) {
+                console.log(data)
+                document.getElementById("low").value = ""
+                document.getElementById("high").value = ""
+
+                var data = google.visualization.arrayToDataTable(data);
+                var view = new google.visualization.DataView(data);
+                // annotation column
+                view.setColumns([0, 1,
+                                {   
+                                    calc: "stringify",
+                                    sourceColumn: 1,
+                                    type: "string",
+                                    role: "annotation"
+                                },]);
+                var options = {
+                    title: "Sactter diagram",
+                    legend: { position: "none" },
+                };
+                var chart = new google.visualization.ColumnChart(document.getElementById("scatter_digram"));
+                chart.draw(view, options);
+            })
+        }
+        
     </script>
 </html>
