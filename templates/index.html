@@ -104,66 +104,6 @@
             }
         }
 
-        // show state pop use pie chart.
-        function show_state_pop() {
-            url = '/state_pop'
-            ajaxGet(url, function (data) {
-                console.log(data);
-                // convert data to google DataTable
-                var data = google.visualization.arrayToDataTable(data);
-                var options = {
-                    title: 'State Totalpop',
-                };
-                var chart = new google.visualization.PieChart(document.getElementById('state_pop'));
-                chart.draw(data, options);
-            })
-        }
-
-        // show state voted pop use scatter vertical bar.
-        function show_state_voted() {
-            url = '/state_voted'
-            ajaxGet(url, function (data) {
-                console.log(data)
-                // convert data to google DataTable
-                var data = google.visualization.arrayToDataTable(data);
-                var view = new google.visualization.DataView(data);
-                // annotation column
-                view.setColumns([0, 1,
-                                {   
-                                    calc: "stringify",
-                                    sourceColumn: 1,
-                                    type: "string",
-                                    role: "annotation"
-                                },]);
-                var options = {
-                    title: "State Voted",
-                    legend: { position: "none" },
-                };
-                var chart = new google.visualization.ColumnChart(document.getElementById("state_voted"));
-                chart.draw(view, options);
-            })
-        }
-
-        // show state total and voted pop use scatter plot.
-        function show_total_voted() {
-            url = '/total_voted'
-            ajaxGet(url, function (data) {
-                console.log(data)
-                // convert data to google DataTable
-                var data = google.visualization.arrayToDataTable(data);
-                var options = {
-                    title: 'TotalPop vs Voted',
-                    hAxis: {title: 'TotalPop'},
-                    vAxis: {title: 'Voted'},
-                    legend: 'none',
-                };
-
-                var chart = new google.visualization.ScatterChart(document.getElementById('total_voted'));
-                chart.draw(data, options);
-                }
-            )
-        }
-
         function draw_fruit_fraction() {
             console.log("draw_fruit_fraction")
             fruit_number = parseInt(document.getElementById("fruit_number").value)
