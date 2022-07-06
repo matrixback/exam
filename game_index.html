@@ -1,0 +1,58 @@
+<html>
+    <header>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </header>
+    <body>
+        <div>
+            <form action="/" method="post">
+                <div>
+                    <lable>
+                        enter your name
+                    </lable>
+                    <input type="text" name="play_name">
+                </div>
+                <div>
+                    <label>
+                        you code
+                    </label>
+                    <input type="text" name="code">
+                </div>
+                <div>
+                    <input type="submit" value="Submit">
+                </div>
+            </form>
+        </div>
+        <div>
+        </div>
+
+    </body>
+    <script>
+        function ajaxPost(url, data, callback) {
+            // use ajax post data
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', url, true);
+            xhr.setRequestHeader('Content-type', 'application/json');
+            xhr.send(data);
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    callback(JSON.parse(xhr.responseText)['data']);
+                }
+            }
+        }
+
+        function ajaxGet(url, callback) {
+            // use ajax get data
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.send();
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    callback(JSON.parse(xhr.responseText)['data']);
+                }
+            }
+        }   
+    </script>
+</html>
