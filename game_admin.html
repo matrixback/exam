@@ -1,0 +1,51 @@
+<html>
+    <header>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </header>
+    <body>
+        <div>
+            <h3>players</h3>
+            <p>{{players[0]}}</p>
+            <p>{{players[1]}}</p>
+            <button>Stop game</button>
+        </div>
+        <div>
+            History
+            <table>
+                <thead>
+                    <tr><th>start_time</th><th>end_time</th></tr>
+                </thead>
+            </table>
+        </div>
+
+    </body>
+    <script>
+        function ajaxPost(url, data, callback) {
+            // use ajax post data
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', url, true);
+            xhr.setRequestHeader('Content-type', 'application/json');
+            xhr.send(data);
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    callback(JSON.parse(xhr.responseText)['data']);
+                }
+            }
+        }
+
+        function ajaxGet(url, callback) {
+            // use ajax get data
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.send();
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    callback(JSON.parse(xhr.responseText)['data']);
+                }
+            }
+        }   
+    </script>
+</html>
